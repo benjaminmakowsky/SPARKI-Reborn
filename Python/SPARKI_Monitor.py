@@ -52,12 +52,15 @@ def msg_sender():
     msg = 'NULL'                                #Character to send
     ser = serial.Serial('/dev/ttyACM0', 9600)   #Serial port to talk to
     ser.flushInput()                            #Flushes input to prevent any strange behavior
+
+    print("Enter a single character: ")
     received_quit = False
     while(received_quit == False):
         #Get input and check length validity	
-        msg = input("Enter a single character: ")
+        msg = input()
         if(str(msg) == "q"):
-            received_quit = True	    
+            received_quit = True
+            print("Received Exit Code")	    
         if(len(msg) > 1):	    
             print('Error! Not a single character\n')	       
         else:	   
