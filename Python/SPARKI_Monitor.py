@@ -35,10 +35,16 @@ class outgoingThread (threading.Thread):
 def msg_monitor():
     ser = serial.Serial('/dev/ttyACM0', 9600)   #Serial port to talk to
     ser.flushInput()                            #Flushes input to prevent any strange behavior
-    if(ser.in_waiting > 0):
-            ser_bytes = ser.readline()
-            decoded_bytes = (ser_bytes[0:len(ser_bytes)-2].decode("utf-8"))
-            print(decoded_bytes)
+    received_quit = False
+    while(received_quit == False):
+        decoded_bytes = ""
+        if(ser.in_waiting > 0):
+                ser_bytes = ser.readline()
+                decoded_bytes = (ser_bytes[0:len(ser_bytes)-2].decode("utf-8"))
+                print(decoded_bytes)
+        if(decoded_bytes == "q"):
+            received_quit = True
+            
 
 #Function to send msgs via serial            
 def msg_sender():
