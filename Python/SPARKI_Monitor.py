@@ -52,15 +52,16 @@ def msg_sender():
     msg = 'NULL'                                #Character to send
     ser = serial.Serial('/dev/ttyACM0', 9600)   #Serial port to talk to
     ser.flushInput()                            #Flushes input to prevent any strange behavior
-    while(msg != "q"):
+    received_quit = False
+    while(received_quit == False):
         #Get input and check length validity	
-        #Check if anything is in bufffer
-        msg = input("Enter a single character: ")	    
+        msg = input("Enter a single character: ")
+        if(string(msg) == "q"):
+            received_quit = True	    
         if(len(msg) > 1):	    
             print('Error! Not a single character\n')	       
         else:	   
             ser.write(msg.encode())	        
-            print('Sent\n')
 
 # Create new threads
 thread1 = incomingThread(1, "msg_monitor")
