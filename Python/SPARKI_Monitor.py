@@ -6,7 +6,7 @@ import threading
 
 exitFlag = 0
 
-#Thread used to monitor incoming text on serial
+#Define a thread that handles incoming text and displays it to the prompt
 class incomingThread (threading.Thread):
    def __init__(self, threadID, name):
       threading.Thread.__init__(self)
@@ -19,7 +19,7 @@ class incomingThread (threading.Thread):
       print("Exiting " + self.name)
 
 
-#Thread to send text via serial
+#Define a thread that handles sending messages to arduino via serial
 class outgoingThread (threading.Thread):
    def __init__(self, threadID, name):
       threading.Thread.__init__(self)
@@ -49,16 +49,16 @@ def msg_sender():
     while(msg != "q"):
         #Get input and check length validity	
         #Check if anything is in bufffer
-        char_read = input("Enter a single character: ")	    
-        if(len(char_read) > 1):	    
+        msg = input("Enter a single character: ")	    
+        if(len(msg) > 1):	    
             print('Error! Not a single character\n')	       
         else:	   
-            ser.write(char_read.encode())	        
+            ser.write(msg.encode())	        
             print('Sent\n')
 
 # Create new threads
-thread1 = incomingThread(1, "Thread-1")
-thread2 = outgoingThread(2, "Thread-2")
+thread1 = incomingThread(1, "msg_monitor")
+thread2 = outgoingThread(2, "msg_sender")
 
 # Start new Threads
 thread1.start()
