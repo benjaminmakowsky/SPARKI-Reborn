@@ -71,8 +71,12 @@ thread1 = incomingThread(1, "msg_monitor")
 thread2 = outgoingThread(2, "msg_sender")
 
 # Start new Threads
+# Start new Threads
 thread1.start()
 thread2.start()
 
+thread1.join()
+thread2.join()
+print("\nExiting the Program!!!")
 
 
