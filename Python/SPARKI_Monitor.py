@@ -1,6 +1,7 @@
 #Self Implemented Serial Monitor for Sparki
 import serial
 import threading
+import sys
 
 
 #Define a thread that handles incoming text and displays it to the prompt
@@ -42,7 +43,7 @@ def msg_monitor():
                 decoded_bytes = (ser_bytes[0:len(ser_bytes)-2].decode("utf-8"))
                 print(decoded_bytes)
         if(decoded_bytes == "q"):
-            break
+            sys.exit()
 
 
 
@@ -58,13 +59,14 @@ def msg_sender():
     while(True):
         #Get input and check length validity	
         msg = input()
-        if(str(msg) == "q"):
-            print("Received Exit Code")	    
-            break
         if(len(msg) > 1):	    
             print('Error! Not a single character\n')	       
         else:	   
-            ser.write(msg.encode())	        
+            ser.write(msg.encode())	 
+
+        if(str(msg) == "q"):
+            print("Received Exit Code")	    
+            sys.exit()       
 
 # Create new threads
 thread1 = incomingThread(1, "msg_monitor")
