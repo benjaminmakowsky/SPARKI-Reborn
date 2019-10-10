@@ -35,7 +35,7 @@ class outgoingThread (threading.Thread):
 def msg_monitor(thread_name):
     ser = serial.Serial('/dev/ttyACM0', 9600)   #Serial port to talk to
     ser.flushInput()                            #Flushes input to prevent any strange behavior
-    while(1):
+    while(True):
         decoded_bytes = ""
         if(ser.in_waiting > 0):
                 ser_bytes = ser.readline()
@@ -53,7 +53,7 @@ def msg_sender(thread_name):
     ser.flushInput()                            #Flushes input to prevent any strange behavior
 
     print("Enter a single character: ")
-    while(1):
+    while(True):
         #Get input and check length validity	
         msg = input()
         if(str(msg) == "q"):
