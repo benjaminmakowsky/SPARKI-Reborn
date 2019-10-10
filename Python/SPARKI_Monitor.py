@@ -15,7 +15,7 @@ class incomingThread (threading.Thread):
 
    def run(self):
       print("Starting " + self.name)
-      msg_sender()
+      msg_sender(self.name)
       print("Exiting " + self.name)
 
 
@@ -28,38 +28,36 @@ class outgoingThread (threading.Thread):
 
    def run(self):
       print("Starting " + self.name)
-      msg_monitor()
+      msg_monitor(self.name)
       print("Exiting " + self.name)
 
 #Function used to wait for message
-def msg_monitor():
+def msg_monitor(thread_name):
     ser = serial.Serial('/dev/ttyACM0', 9600)   #Serial port to talk to
     ser.flushInput()                            #Flushes input to prevent any strange behavior
-    received_quit = False
-    while(received_quit == False):
+    while(1):
         decoded_bytes = ""
         if(ser.in_waiting > 0):
                 ser_bytes = ser.readline()
                 decoded_bytes = (ser_bytes[0:len(ser_bytes)-2].decode("utf-8"))
                 print(decoded_bytes)
         if(decoded_bytes == "q"):
-            received_quit = True
+            thread_name.exit()
             
 
 #Function to send msgs via serial            
-def msg_sender():
+def msg_sender(thread_name):
     #Setup
     msg = 'NULL'                                #Character to send
     ser = serial.Serial('/dev/ttyACM0', 9600)   #Serial port to talk to
     ser.flushInput()                            #Flushes input to prevent any strange behavior
 
     print("Enter a single character: ")
-    received_quit = False
-    while(received_quit == False):
+    while(1):
         #Get input and check length validity	
         msg = input()
         if(str(msg) == "q"):
-            received_quit = True
+            thread_name.exit()
             print("Received Exit Code")	    
         if(len(msg) > 1):	    
             print('Error! Not a single character\n')	       
@@ -70,13 +68,6 @@ def msg_sender():
 thread1 = incomingThread(1, "msg_monitor")
 thread2 = outgoingThread(2, "msg_sender")
 
-# Start new Threads
-# Start new Threads
-thread1.start()
-thread2.start()
-
-thread2.join()
-thread1.join()
 
 print("\nExiting the Program!!!")
 
