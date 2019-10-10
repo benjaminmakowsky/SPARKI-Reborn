@@ -3,9 +3,6 @@ import serial
 import threading
 
 
-
-exitFlag = 0
-
 #Define a thread that handles incoming text and displays it to the prompt
 class incomingThread (threading.Thread):
    def __init__(self, threadID, name):
@@ -15,7 +12,7 @@ class incomingThread (threading.Thread):
 
    def run(self):
       print("Starting " + self.name)
-      msg_sender(self.name)
+      msg_sender()
       print("Exiting " + self.name)
 
 
@@ -28,11 +25,14 @@ class outgoingThread (threading.Thread):
 
    def run(self):
       print("Starting " + self.name)
-      msg_monitor(self.name)
+      msg_monitor()
       print("Exiting " + self.name)
 
+
+
+
 #Function used to wait for message
-def msg_monitor(thread_name):
+def msg_monitor():
     ser = serial.Serial('/dev/ttyACM0', 9600)   #Serial port to talk to
     ser.flushInput()                            #Flushes input to prevent any strange behavior
     while(True):
@@ -42,11 +42,13 @@ def msg_monitor(thread_name):
                 decoded_bytes = (ser_bytes[0:len(ser_bytes)-2].decode("utf-8"))
                 print(decoded_bytes)
         if(decoded_bytes == "q"):
-            thread_name.exit()
-            
+            break
+
+
+
 
 #Function to send msgs via serial            
-def msg_sender(thread_name):
+def msg_sender():
     #Setup
     msg = 'NULL'                                #Character to send
     ser = serial.Serial('/dev/ttyACM0', 9600)   #Serial port to talk to
@@ -57,8 +59,8 @@ def msg_sender(thread_name):
         #Get input and check length validity	
         msg = input()
         if(str(msg) == "q"):
-            thread_name.exit()
             print("Received Exit Code")	    
+            break
         if(len(msg) > 1):	    
             print('Error! Not a single character\n')	       
         else:	   
@@ -72,6 +74,5 @@ thread2 = outgoingThread(2, "msg_sender")
 thread1.start()
 thread2.start()
 
-print("\nExiting the Program!!!")
-
+print("Exiting Initialization Thread")
 
