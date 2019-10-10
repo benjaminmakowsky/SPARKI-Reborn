@@ -56,7 +56,7 @@ def msg_sender():
     while(received_quit == False):
         #Get input and check length validity	
         msg = input("Enter a single character: ")
-        if(String(msg) == "q"):
+        if(str(msg) == "q"):
             received_quit = True	    
         if(len(msg) > 1):	    
             print('Error! Not a single character\n')	       
