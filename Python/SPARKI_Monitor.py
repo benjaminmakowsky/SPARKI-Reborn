@@ -36,14 +36,13 @@ class outgoingThread (threading.Thread):
 def msg_monitor():
     ser = serial.Serial('/dev/ttyACM0', 9600)   #Serial port to talk to
     ser.flushInput()                            #Flushes input to prevent any strange behavior
-    while(True):
-        decoded_bytes = ""
+    decoded_bytes = ""
+
+    while(str(decoded_bytes) != "q"):
         if(ser.in_waiting > 0):
                 ser_bytes = ser.readline()
                 decoded_bytes = (ser_bytes[0:len(ser_bytes)-2].decode("utf-8"))
                 print(decoded_bytes)
-        if(decoded_bytes == "q"):
-            sys.exit()
 
 
 
@@ -56,17 +55,14 @@ def msg_sender():
     ser.flushInput()                            #Flushes input to prevent any strange behavior
 
     print("Enter a single character: ")
-    while(True):
+    while(str(msg) != "q"):
         #Get input and check length validity	
         msg = input()
         if(len(msg) > 1):	    
             print('Error! Not a single character\n')	       
         else:	   
             ser.write(msg.encode())	 
-
-        if(str(msg) == "q"):
-            print("Received Exit Code")	    
-            sys.exit()       
+     
 
 # Create new threads
 thread1 = incomingThread(1, "msg_monitor")
