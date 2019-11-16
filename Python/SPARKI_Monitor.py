@@ -4,44 +4,21 @@ import threading
 import sys
 
 
-#Define a thread that handles incoming text and displays it to the prompt
-class incomingThread (threading.Thread):
-   def __init__(self, threadID, name):
-      threading.Thread.__init__(self)
-      self.threadID = threadID
-      self.name = name
-
-   def run(self):
-      print("Starting " + self.name)
-      msg_sender()
-      print("Exiting " + self.name)
-
-
-#Define a thread that handles sending messages to arduino via serial
-class outgoingThread (threading.Thread):
-   def __init__(self, threadID, name):
-      threading.Thread.__init__(self)
-      self.threadID = threadID
-      self.name = name
-
-   def run(self):
-      print("Starting " + self.name)
-      msg_monitor()
-      print("Exiting " + self.name)
-
-
-
-
-#Function used to wait for message
+#Function used to listen for message
 def msg_monitor():
+    print('Starting monitor\n')
     ser = serial.Serial('/dev/ttyACM0', 9600)   #Serial port to talk to
     ser.flushInput()                            #Flushes input to prevent any strange behavior
     decoded_bytes = ""
 
-    while(str(decoded_bytes) != "q"):
-        if(ser.in_waiting > 0):
+    while(True):
+        global stop_threads
+        if stop_threads: 
+            break
+        elif(ser.in_waiting > 0):
                 ser_bytes = ser.readline()
                 decoded_bytes = (ser_bytes[0:len(ser_bytes)-2].decode("utf-8"))
+                #Debug line can be removed
                 print(decoded_bytes)
 
 
@@ -50,27 +27,39 @@ def msg_monitor():
 #Function to send msgs via serial            
 def msg_sender():
     #Setup
+    print('Starting Sender\n')
     msg = 'NULL'                                #Character to send
     ser = serial.Serial('/dev/ttyACM0', 9600)   #Serial port to talk to
     ser.flushInput()                            #Flushes input to prevent any strange behavior
 
     print("Enter a single character: ")
-    while(str(msg) != "q"):
-        #Get input and check length validity	
-        msg = input()
-        if(len(msg) > 1):	    
-            print('Error! Not a single character\n')	       
-        else:	   
-            ser.write(msg.encode())	 
-     
+    while(True):
+        global stop_threads
+        if stop_threads: 
+            break
+        else:
+            #Get input and check length validity	
+            msg = input()
+
+            if(len(msg) > 1):	    
+                  print('Error! Not a single character\n')
+            
+            if(str(msg) == "q"):
+               stop_threads = True	
+            else:
+               ser.write(msg[0].encode())	 
+        
+
+
+#Gloabl Variable to stop Threads
+stop_threads = False     
 
 # Create new threads
-thread1 = incomingThread(1, "msg_monitor")
-thread2 = outgoingThread(2, "msg_sender")
+thread1 = threading.Thread(target = msg_sender)
+thread2 = threading.Thread(target = msg_monitor)
 
 # Start new Threads
 thread1.start()
 thread2.start()
 
 print("Exiting Initialization Thread")
-

@@ -35,10 +35,13 @@ void loop() {
     charRead = Serial.read();
     char buff[BUFF_SIZE];
     
+    /*
+    * DEBUG CODE BELOW
+    */
     // say what you got:
-    sprintf(buff, "R:%c",charRead);
-    Serial.write(buff, BUFF_SIZE);
-    Serial.println("\n");
+    //sprintf(buff, "R:%c",charRead);
+    //Serial.write(buff, BUFF_SIZE);
+    //Serial.println("\n");
 
     //Blink if a certain char is read
     switch(charRead){
